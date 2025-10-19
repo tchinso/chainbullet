@@ -379,7 +379,7 @@
     if (boss) return;
     const lv = Game.level;
     if (lv%5===0){
-      boss = new Enemy('boss', vw/2, vh*0.2, 600 + lv*170, 30 + lv*2);
+      boss = new Enemy('boss', vw/2, vh*0.2, 600 + lv*200, 30 + lv*2);
       boss.r = 36 + lv*0.8;
       Game.enemies.push(boss);
     }

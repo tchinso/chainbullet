@@ -351,9 +351,9 @@
 
     // === CHANGE: 레벨 진입 회복량 — 5/10/15/20는 30%, 나머지는 20% ===
     const milestone = (lv===5 || lv===10 || lv===15 || lv===20);
-    const healPct = milestone ? 0.30 : 0.20;
+    const healPct = milestone ? 0.50 : 0.20;
     Game.team.forEach(c=> c.hp = clamp(c.hp + c.maxHP*healPct, 0, c.maxHP));
-    if (milestone) { spawnText(cur.x, cur.y-36, '+30% HP', '#4cd964'); }
+    if (milestone) { spawnText(cur.x, cur.y-36, '+50% HP', '#4cd964'); }
 
     hideScreen('#buffScreen'); renderBuffIcons(); updateTeamBar();
   }

@@ -123,9 +123,9 @@
         spawnText(self.x, self.y-24, '버스트!', '#66d9ef');
       }
     }},
-    cc:    { name:'CC/디버프', color:'#ffd166', hp:110, speed:165, rof:6.5, bullet: { dmg:6, speed:720, spread:10, pellets:1 }, skill:{
+    cc:    { name:'CC/디버프', color:'#ffd166', hp:110, speed:165, rof:6.5, bullet: { dmg:9, speed:720, spread:10, pellets:1 }, skill:{
       name:'감속 필드', cost:100, cd:12, cast: (self)=>{
-        Effects.slowField(self.x, self.y, 130, 5.0, 0.45);
+        Effects.slowField(self.x, self.y, 130, 8.0, 0.45);
       }
     }},
   };

@@ -69,6 +69,8 @@
     nextLevelReady:false,
     levelGoal:false, // true when boss defeated & all waves done
     rngSeed: (Math.random()*1e9)|0,
+    // === NEW: 교체 쿨다운 전역 타이머 ===
+    swapLockUntil: 0,
     setTime(t){ this.time = t; $('#time').textContent = formatTime(t); },
   };
 
@@ -123,9 +125,9 @@
         spawnText(self.x, self.y-24, '버스트!', '#66d9ef');
       }
     }},
-    cc:    { name:'CC/디버프', color:'#ffd166', hp:110, speed:165, rof:6.5, bullet: { dmg:8, speed:720, spread:10, pellets:1 }, skill:{
+    cc:    { name:'CC/디버프', color:'#ffd166', hp:110, speed:165, rof:6.5, bullet: { dmg:6, speed:720, spread:10, pellets:1 }, skill:{
       name:'감속 필드', cost:100, cd:12, cast: (self)=>{
-        Effects.slowField(self.x, self.y, 130, 8.0, 0.45);
+        Effects.slowField(self.x, self.y, 130, 5.0, 0.45);
       }
     }},
   };
@@ -144,7 +146,7 @@
       this.bullet = JSON.parse(JSON.stringify(tpl.bullet));
       this.pierce = 0;
       this.crit = 0.05;
-      this.tp = 0; this.tpMax = 100; // ★ 변경: TP 최대치 100
+      this.tp = 0; this.tpMax = 200; // ★ 변경: TP 최대치 200
       this.tpGainMul = 1;
       this.skill = Object.assign({}, tpl.skill);
       this.skillCdMul = 1;
@@ -439,7 +441,8 @@
       // if there is another alive teammate, swap; else game over
       const next = Game.team.findIndex((c,i)=> i!==Game.currentIdx && c.alive);
       if (next>=0){
-        switchTo(next);
+        // ★★★ 사망 자동 교체 — 쿨다운 예외 처리 ★★★
+        switchTo(next, /*fromDeath*/true);
         spawnText(cur.x, cur.y, '교대!', '#fff');
       } else {
         Game.over = true;
@@ -472,17 +475,38 @@
         <div class="hpbar"><div class="fill" style="width:${hpPct}%"></div></div>
         <div class="gauge"><div class="fill" style="width:${tpPct}%"></div></div>
         <div class="role" style="border-color:${c.color}; color:${c.color}">${ROLES[c.role].name}</div>`;
-      p.addEventListener('touchstart', (e)=>{ e.preventDefault(); switchTo(i); }, { passive:false });
-      p.addEventListener('click', ()=> switchTo(i));
+      // ★ 포트레이트 눌렀을 때는 교체 요청(쿨 검사 포함)
+      p.addEventListener('touchstart', (e)=>{ e.preventDefault(); requestSwitch(i); }, { passive:false });
+      p.addEventListener('click', ()=> requestSwitch(i));
       teamBar.appendChild(p);
     });
     // 위치 보정은 매번 안전하게
     positionTeamBar();
   }
-  function switchTo(i){
+
+  // === NEW: 교체 쿨다운 로직 ===
+  function canSwitchNow(){
+    return Game.time >= (Game.swapLockUntil || 0);
+  }
+  function requestSwitch(i){
+    if (i===Game.currentIdx) return;
+    if (!canSwitchNow()){
+      const remain = Math.max(0, Game.swapLockUntil - Game.time);
+      // 쿨다운 남은 시간 안내
+      spawnText(cur.x, cur.y - 30, `교대 대기 ${remain.toFixed(1)}s`, '#ffd166');
+      return;
+    }
+    switchTo(i, /*fromDeath*/false);
+  }
+  function switchTo(i, fromDeath=false){
     if (i===Game.currentIdx) return;
     Game.currentIdx = i; cur = Game.team[i];
+    // 무적 부여
     cur.guardTime = Math.max(cur.guardTime, 1.2);
+    // 수동 교체일 때만 5초 쿨다운 시작
+    if (!fromDeath){
+      Game.swapLockUntil = Game.time + 5.0;
+    }
     updateTeamBar();
     updateSkillReadyHint(); // ★ 스킬 준비 테두리 즉시 갱신
   }
@@ -568,9 +592,9 @@
   window.addEventListener('keydown', (e)=>{
     if (e.code==='KeyJ') firing=true;
     if (e.code==='KeyK') cur.trySkill(Game.time);
-    if (e.code==='Digit1') switchTo(0);
-    if (e.code==='Digit2') switchTo(1);
-    if (e.code==='Digit3') switchTo(2);
+    if (e.code==='Digit1') requestSwitch(0);
+    if (e.code==='Digit2') requestSwitch(1);
+    if (e.code==='Digit3') requestSwitch(2);
     if (e.code==='Escape') togglePause();
   });
   window.addEventListener('keyup', (e)=>{
@@ -795,6 +819,7 @@
         new Character('cc',   Game.team[2].portraitUrl),
       ];
       cur = Game.team[0]; Game.currentIdx=0;
+      Game.swapLockUntil = 0; // 러닝 시작 시 교체 가능
       updateTeamBar();
       updateSkillReadyHint(); // 초기 상태 반영
     }

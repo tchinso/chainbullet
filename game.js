@@ -109,7 +109,7 @@
 
   // ===== Characters =====
   const ROLES = {
-    tank:  { name:'탱/힐', color:'#4cd964', hp:140, speed:155, rof:5.5, bullet: { dmg:9, speed:680, spread:8, pellets:4 }, skill:{
+    tank:  { name:'탱/힐', color:'#4cd964', hp:140, speed:155, rof:5.5, bullet: { dmg:6, speed:680, spread:8, pellets:4 }, skill:{
       name:'팀 힐+가드', cost:100, cd:14, cast:(self)=>{
         Game.team.forEach(c=>{
           const heal = Math.round(c.maxHP*0.25);

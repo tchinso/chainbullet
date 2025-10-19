@@ -144,7 +144,7 @@
       this.bullet = JSON.parse(JSON.stringify(tpl.bullet));
       this.pierce = 0;
       this.crit = 0.05;
-      this.tp = 0; this.tpMax = 200; // ★ 변경: TP 최대치 200
+      this.tp = 0; this.tpMax = 100; // ★ 변경: TP 최대치 100
       this.tpGainMul = 1;
       this.skill = Object.assign({}, tpl.skill);
       this.skillCdMul = 1;

@@ -370,7 +370,7 @@
     const r = Math.random();
     if (r < (0.15+lv*0.01)) type='shooter';
     else if (r < (0.22+lv*0.015)) type='bomber';
-    const hp = Math.round(20 + lv*5 + (type==='bomber'? -8 : type==='shooter'? 6 : 0));
+    const hp = Math.round(20 + lv*7 + (type==='bomber'? -8 : type==='shooter'? 6 : 0));
     const sp = 60 + lv*6 + (type==='bomber'? 40 : type==='shooter'? -10 : 0);
     Game.enemies.push(new Enemy(type, x,y, hp, sp));
   }
@@ -379,7 +379,7 @@
     if (boss) return;
     const lv = Game.level;
     if (lv%5===0){
-      boss = new Enemy('boss', vw/2, vh*0.2, 600 + lv*120, 30 + lv*2);
+      boss = new Enemy('boss', vw/2, vh*0.2, 600 + lv*170, 30 + lv*2);
       boss.r = 36 + lv*0.8;
       Game.enemies.push(boss);
     }

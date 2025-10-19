@@ -144,7 +144,7 @@
       this.bullet = JSON.parse(JSON.stringify(tpl.bullet));
       this.pierce = 0;
       this.crit = 0.05;
-      this.tp = 0; this.tpMax = 100;
+      this.tp = 0; this.tpMax = 200; // ★ 변경: TP 최대치 200
       this.tpGainMul = 1;
       this.skill = Object.assign({}, tpl.skill);
       this.skillCdMul = 1;
@@ -351,9 +351,9 @@
 
     // === CHANGE: 레벨 진입 회복량 — 5/10/15/20는 30%, 나머지는 20% ===
     const milestone = (lv===5 || lv===10 || lv===15 || lv===20);
-    const healPct = milestone ? 0.50 : 0.20;
+    const healPct = milestone ? 0.30 : 0.20;
     Game.team.forEach(c=> c.hp = clamp(c.hp + c.maxHP*healPct, 0, c.maxHP));
-    if (milestone) { spawnText(cur.x, cur.y-36, '+50% HP', '#4cd964'); }
+    if (milestone) { spawnText(cur.x, cur.y-36, '+30% HP', '#4cd964'); }
 
     hideScreen('#buffScreen'); renderBuffIcons(); updateTeamBar();
   }
@@ -484,6 +484,7 @@
     Game.currentIdx = i; cur = Game.team[i];
     cur.guardTime = Math.max(cur.guardTime, 1.2);
     updateTeamBar();
+    updateSkillReadyHint(); // ★ 스킬 준비 테두리 즉시 갱신
   }
   updateTeamBar();
   window.addEventListener('resize', positionTeamBar, { passive:true });
@@ -590,6 +591,19 @@
     if (Game.paused){ showScreen('#pauseScreen'); } else { hideScreen('#pauseScreen'); last = performance.now(); loop(); }
   }
 
+  // ★★★ 스킬 버튼 테두리 업데이트 (TP≥100 & 쿨타임 완료 시 초록 테두리) ★★★
+  function updateSkillReadyHint(){
+    const ready = (cur.tp >= 100) && (Game.time >= cur.skillReadyAt);
+    // 얇은 초록색 외곽선만 사용해서 다른 이펙트와 충돌 없음
+    if (ready){
+      skillBtn.style.outline = '2px solid #4cd964';
+      skillBtn.style.outlineOffset = '3px';
+    } else {
+      skillBtn.style.outline = '';
+      skillBtn.style.outlineOffset = '';
+    }
+  }
+
   // ===== Core Loop =====
   function loop(now=performance.now()){
     if (!Game.running) return;
@@ -653,6 +667,9 @@
     for (const fx of Game.effects){ if (fx.draw) fx.draw(fx); }
 
     if ((now|0)%3===0) updateTeamBar();
+
+    // ★ 프레임마다 스킬 테두리 갱신
+    updateSkillReadyHint();
 
     checkLevelClear();
 
@@ -779,6 +796,7 @@
       ];
       cur = Game.team[0]; Game.currentIdx=0;
       updateTeamBar();
+      updateSkillReadyHint(); // 초기 상태 반영
     }
     setupLevel(1);
     Game.running=true; Game.paused=false; Game.win=false; Game.over=false;

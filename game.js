@@ -126,7 +126,7 @@
       }
     }},
     cc:    { name:'CC/디버프', color:'#ffd166', hp:110, speed:165, rof:6.5, bullet: { dmg:8, speed:720, spread:10, pellets:1 }, skill:{
-      name:'감속 필드', cost:100, cd:12, cast: (self)=>{
+      name:'감속 필드', cost:100, cd:8, cast: (self)=>{
         Effects.slowField(self.x, self.y, 130, 8.0, 0.45);
       }
     }},

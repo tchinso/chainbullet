@@ -211,9 +211,13 @@
   }
 
   // ===== Enemy stat tables =====
-  // ---- 레벨 캡 유틸: 일반몹(chaser/shooter/bomber)은 13레벨까지만 스케일링 ----
-  function normLv(type, lv){
-    return (type==='chaser' || type==='shooter' || type==='bomber') ? Math.min(lv, 13) : lv;
+  // ---- 레벨 보정: 일반몹(chaser/shooter/bomber)은 13 이후 0.3씩만 증가 ----
+function normLv(type, lv){
+  if (type==='chaser' || type==='shooter' || type==='bomber'){
+    if (lv <= 13) return lv;
+    return 13 + (lv - 13) * 0.3; // 14→13.3, 15→13.6 ...
+  }
+  return lv; // 보스 등은 원래 레벨 그대로
   }
 
   function enemyHP(type, lv){

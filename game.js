@@ -116,10 +116,10 @@
         spawnText(self.x, self.y-24, '버스트!', '#66d9ef');
       }
     }},
-    cc:   { name:'CC/디버프', color:'#ffd166', hp:110, speed:165, rof:6.5, bullet:{ dmg:8, speed:720, spread:10, pellets:1 }, skill:{
-      // 변경: 2초간 모든 적/적탄 정지. cd 6초
+    cc:   { name:'CC', color:'#ffd166', hp:110, speed:165, rof:6.5, bullet:{ dmg:8, speed:720, spread:10, pellets:1 }, skill:{
+      // 변경: 6초간 모든 적/적탄 정지. cd 6초
       name:'시간 정지', cost:100, cd:6, cast:(self)=>{
-        Game.stasisTimer = Math.max(Game.stasisTimer, 2.0);
+        Game.stasisTimer = Math.max(Game.stasisTimer, 6.0);
         spawnText(self.x, self.y-24, '정지!', '#ffd166');
       }
     }},

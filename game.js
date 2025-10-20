@@ -117,9 +117,9 @@
       }
     }},
     cc:   { name:'CC', color:'#ffd166', hp:110, speed:165, rof:6.5, bullet:{ dmg:8, speed:720, spread:10, pellets:1 }, skill:{
-      // 변경: 3초간 모든 적/적탄 정지. cd 6초
+      // 변경: 4초간 모든 적/적탄 정지. cd 6초
       name:'시간 정지', cost:100, cd:6, cast:(self)=>{
-        Game.stasisTimer = Math.max(Game.stasisTimer, 3.0);
+        Game.stasisTimer = Math.max(Game.stasisTimer, 4);
         spawnText(self.x, self.y-24, '정지!', '#ffd166');
       }
     }},

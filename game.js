@@ -7,9 +7,9 @@
 
   // ===== DOM helpers & canvas bootstrap =====
   const $ = sel => document.querySelector(sel);
-  const canvas = $('#game');
+  const canvas = '#game' ? document.querySelector('#game') : null;
   const ctx = canvas.getContext('2d', { alpha: false });
-  const stage = $('#stage');
+  const stage = '#stage' ? document.querySelector('#stage') : null;
 
   const DPR = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
   let vw = 0, vh = 0;
@@ -62,7 +62,7 @@
     // swap cooldown (remaining seconds)
     swapCdRemain:0,
 
-    setTime(t){ this.time = t; $('#time').textContent = formatTime(t); }
+    setTime(t){ this.time = t; document.querySelector('#time').textContent = formatTime(t); }
   };
 
   // ===== Buffs (동일) =====
@@ -90,7 +90,7 @@
     renderBuffIcons();
   }
   function renderBuffIcons(){
-    const wrap = $('#buffIcons'); wrap.innerHTML='';
+    const wrap = document.querySelector('#buffIcons'); wrap.innerHTML='';
     Game.buffs.forEach(b=>{
       const el = document.createElement('div'); el.className='buff'; el.title=b.name;
       el.style.background = '#2c3e50';
@@ -117,9 +117,9 @@
       }
     }},
     cc:   { name:'CC', color:'#ffd166', hp:110, speed:165, rof:6.5, bullet:{ dmg:8, speed:720, spread:10, pellets:1 }, skill:{
-      // 변경: 6초간 모든 적/적탄 정지. cd 6초
+      // 변경: 3초간 모든 적/적탄 정지. cd 6초
       name:'시간 정지', cost:100, cd:6, cast:(self)=>{
-        Game.stasisTimer = Math.max(Game.stasisTimer, 6.0);
+        Game.stasisTimer = Math.max(Game.stasisTimer, 3.0);
         spawnText(self.x, self.y-24, '정지!', '#ffd166');
       }
     }},
@@ -211,17 +211,24 @@
   }
 
   // ===== Enemy stat tables =====
+  // ---- 레벨 캡 유틸: 일반몹(chaser/shooter/bomber)은 13레벨까지만 스케일링 ----
+  function normLv(type, lv){
+    return (type==='chaser' || type==='shooter' || type==='bomber') ? Math.min(lv, 13) : lv;
+  }
+
   function enemyHP(type, lv){
-    const base = 20 + (lv * 10);
+    const L = normLv(type, lv);
+    const base = 20 + (L * 10);
     if (type==='shooter') return base + 12;
     if (type==='bomber')  return base - 16;
-    return base; // chaser
+    return base; // chaser 및 기타
   }
   function enemySPD(type, lv){
-    const base = 60 + (lv * 6);
+    const L = normLv(type, lv);
+    const base = 60 + (L * 6);
     if (type==='shooter') return base + 6;
     if (type==='bomber')  return base - 8;
-    return base; // chaser
+    return base; // chaser 및 기타
   }
   function dmgShooterBullet(lv){
     if (lv<=5) return 6; if (lv<=10) return 7; if (lv<=15) return 8; return 9;
@@ -358,7 +365,7 @@
   // ===== Level / Spawning =====
   let spawnTimer=0, boss=null;
   function setupLevel(lv){
-    Game.level = lv; $('#lvl').textContent = lv;
+    Game.level = lv; document.querySelector('#lvl').textContent = lv;
     Game.setTime(0);
     Game.enemies.length=0; Game.bullets.length=0; Game.ebullets.length=0; Game.effects.length=0;
     Game.over=false; Game.levelGoal=false; Game.nextLevelReady=false; Game.spawningStopped=false; boss=null;
@@ -441,7 +448,7 @@
     Game.inBuffChoice = true;
 
     const choices = rollBuffs(3);
-    const wrap = $('#buffChoices'); wrap.innerHTML='';
+    const wrap = document.querySelector('#buffChoices'); wrap.innerHTML='';
     choices.forEach(b=>{
       const el = document.createElement('div'); el.className='pick';
       el.innerHTML = `<div style="font-weight:700; margin-bottom:6px">${b.name}</div><div class="muted">${b.desc}</div>`;
@@ -455,7 +462,7 @@
     });
     showScreen('#buffScreen');
   }
-  $('#skipBuffBtn').addEventListener('click', ()=>{
+  document.querySelector('#skipBuffBtn').addEventListener('click', ()=>{
     Game.inBuffChoice = false;
     hideScreen('#buffScreen');
     nextLevel();
@@ -483,7 +490,7 @@
   }
 
   // ===== HUD: portraits & switching =====
-  const teamBar = $('#team-bar');
+  const teamBar = document.querySelector('#team-bar');
   function positionTeamBar(){
     teamBar.style.position = 'absolute';
     teamBar.style.left = '12px';
@@ -531,10 +538,10 @@
   }
 
   // ===== Controls =====
-  const stickZone = $('#stick-zone');
-  const attackBtn = $('#attackBtn');
-  const skillBtn = $('#skillBtn');
-  const stickRoot = $('#stick'); const knob = stickRoot.querySelector('.knob');
+  const stickZone = document.querySelector('#stick-zone');
+  const attackBtn = document.querySelector('#attackBtn');
+  const skillBtn = document.querySelector('#skillBtn');
+  const stickRoot = document.querySelector('#stick'); const knob = stickRoot.querySelector('.knob');
 
   let joyId = null, joyBase = {x:0,y:0}, joyVec={x:0,y:0}, joyActive=false;
   let atkId = null, sklId = null;
@@ -609,11 +616,11 @@
   const key = code => Keys.has(code);
 
   // Pause
-  $('#pauseBtn').addEventListener('click', togglePause);
-  $('#resumeBtn').addEventListener('click', togglePause);
-  $('#restartBtn').addEventListener('click', ()=>{ hideScreen('#pauseScreen'); startRun(true); });
-  $('#retryBtn').addEventListener('click', ()=>{ hideScreen('#overScreen'); startRun(true); });
-  $('#againBtn').addEventListener('click', ()=>{ hideScreen('#winScreen'); startRun(true); });
+  document.querySelector('#pauseBtn').addEventListener('click', togglePause);
+  document.querySelector('#resumeBtn').addEventListener('click', togglePause);
+  document.querySelector('#restartBtn').addEventListener('click', ()=>{ hideScreen('#pauseScreen'); startRun(true); });
+  document.querySelector('#retryBtn').addEventListener('click', ()=>{ hideScreen('#overScreen'); startRun(true); });
+  document.querySelector('#againBtn').addEventListener('click', ()=>{ hideScreen('#winScreen'); startRun(true); });
 
   function togglePause(){
     if (!Game.running && !Game.paused) return;

@@ -112,7 +112,7 @@
     }},
     dps:  { name:'딜러', color:'#66d9ef', hp:90, speed:180, rof:10.0, bullet:{ dmg:7, speed:900, spread:1, pellets:1 }, skill:{
       name:'버스트 사격', cost:100, cd:10, cast:(self)=>{
-        self.burstTime = Math.max(self.burstTime, 7.0);
+        self.burstTime = Math.max(self.burstTime, 6.0);
         spawnText(self.x, self.y-24, '버스트!', '#66d9ef');
       }
     }},

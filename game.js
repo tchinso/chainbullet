@@ -215,7 +215,7 @@
 function normLv(type, lv){
   if (type==='chaser' || type==='shooter' || type==='bomber'){
     if (lv <= 13) return lv;
-    return 13 + (lv - 13) * 0.3; // 14→13.3, 15→13.6 ...
+    return 13 + (lv - 13) * 0.4; // 14→13.4, 15→13.8 ...
   }
   return lv; // 보스 등은 원래 레벨 그대로
   }

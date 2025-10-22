@@ -152,7 +152,7 @@
     regen(dt){
       if (this.hp <= 0) return;
       // 대기 중 재생률은 외부에서 i!==current 조건으로 호출
-      this.hp = clamp(this.hp + dt * this.maxHP * 0.10, 0, this.maxHP);
+      this.hp = clamp(this.hp + dt * this.maxHP * 0.02, 0, this.maxHP);
     }
     trySkill(){
       const cost = this.skill.cost;
